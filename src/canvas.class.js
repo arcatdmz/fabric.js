@@ -1267,14 +1267,16 @@
 
     /**
      * Returns pointer coordinates without the effect of the viewport
-     * @param {Object} pointer with "x" and "y" number values
-     * @return {Object} object with "x" and "y" number values
+     * @param {Object} pointer with "x", "y", and optional "pressure" number values
+     * @return {Object} object with "x", "y", and optional "pressure" number values
      */
     restorePointerVpt: function(pointer) {
-      return fabric.util.transformPoint(
+      var p = fabric.util.transformPoint(
         pointer,
         fabric.util.invertTransform(this.viewportTransform)
       );
+      if (typeof pointer.pressure !== "undefined") p.pressure = pointer.pressure;
+      return p;
     },
 
     /**
@@ -1305,6 +1307,7 @@
       }
 
       var pointer = getPointer(e),
+          pressure = pointer.pressure,
           upperCanvasEl = this.upperCanvasEl,
           bounds = upperCanvasEl.getBoundingClientRect(),
           boundsWidth = bounds.width || 0,
@@ -1340,7 +1343,8 @@
 
       return {
         x: pointer.x * cssScale.width,
-        y: pointer.y * cssScale.height
+        y: pointer.y * cssScale.height,
+        pressure: pressure
       };
     },
 

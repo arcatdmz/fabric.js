@@ -197,7 +197,8 @@
         scroll = fabric.util.getScrollLeftTop(element);
     return {
       x: pointerX(event) + scroll.left,
-      y: pointerY(event) + scroll.top
+      y: pointerY(event) + scroll.top,
+      pressure: pressure(event)
     };
   }
 
@@ -207,6 +208,15 @@
 
       pointerY = function(event) {
         return event.clientY;
+      },
+
+      pressure = function(ev) {
+        // ev.pointerType: "mouse" | "pen" | "touch"
+        if (ev.pointerType === "mouse" || typeof ev.pressure !== "number") {
+          return 0.5;
+        } else {
+          return ev.pressure;
+        }
       };
 
   function _getPointer(event, pageProp, clientProp) {
