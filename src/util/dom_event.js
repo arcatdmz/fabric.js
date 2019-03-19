@@ -211,12 +211,17 @@
       },
 
       pressure = function(ev) {
-        // ev.pointerType: "mouse" | "pen" | "touch"
+        // TouchEvent
+        if (ev.touches && ev.touches.length > 0) {
+          return ev.touches[0].force;
+        }
+        // MouseEvent, PointerEvent (mouse)
         if (ev.pointerType === "mouse" || typeof ev.pressure !== "number") {
           return 0.5;
-        } else {
-          return ev.pressure;
         }
+        // PointerEvent
+        // ev.pointerType: pen" | "touch"
+        return ev.pressure;
       };
 
   function _getPointer(event, pageProp, clientProp) {

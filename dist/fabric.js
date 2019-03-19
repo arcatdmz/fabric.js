@@ -2320,12 +2320,17 @@ fabric.CommonMethods = {
       },
 
       pressure = function(ev) {
-        // ev.pointerType: "mouse" | "pen" | "touch"
+        // TouchEvent
+        if (ev.touches && ev.touches.length > 0) {
+          return ev.touches[0].force;
+        }
+        // MouseEvent, PointerEvent (mouse)
         if (ev.pointerType === "mouse" || typeof ev.pressure !== "number") {
           return 0.5;
-        } else {
-          return ev.pressure;
         }
+        // PointerEvent
+        // ev.pointerType: pen" | "touch"
+        return ev.pressure;
       };
 
   function _getPointer(event, pageProp, clientProp) {
@@ -11018,15 +11023,22 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
 
     addOrRemove: function(functor, eventjsFunctor) {
       functor(fabric.window, 'resize', this._onResize);
-      functor(this.upperCanvasEl, 'mousedown', this._onMouseDown);
-      functor(this.upperCanvasEl, 'mousemove', this._onMouseMove, addEventOptions);
-      functor(this.upperCanvasEl, 'mouseout', this._onMouseOut);
-      functor(this.upperCanvasEl, 'mouseenter', this._onMouseEnter);
+      if (typeof window.PointerEvent !== 'undefined') {
+        functor(this.upperCanvasEl, 'pointerdown', this._onMouseDown);
+        functor(this.upperCanvasEl, 'pointermove', this._onMouseMove, addEventOptions);
+        functor(this.upperCanvasEl, 'pointerout', this._onMouseOut);
+        functor(this.upperCanvasEl, 'pointerenter', this._onMouseEnter);
+      } else {
+        functor(this.upperCanvasEl, 'mousedown', this._onMouseDown);
+        functor(this.upperCanvasEl, 'mousemove', this._onMouseMove, addEventOptions);
+        functor(this.upperCanvasEl, 'mouseout', this._onMouseOut);
+        functor(this.upperCanvasEl, 'mouseenter', this._onMouseEnter);
+        functor(this.upperCanvasEl, 'touchstart', this._onMouseDown, addEventOptions);
+        functor(this.upperCanvasEl, 'touchmove', this._onMouseMove, addEventOptions);
+      }
       functor(this.upperCanvasEl, 'wheel', this._onMouseWheel);
       functor(this.upperCanvasEl, 'contextmenu', this._onContextMenu);
       functor(this.upperCanvasEl, 'dblclick', this._onDoubleClick);
-      functor(this.upperCanvasEl, 'touchstart', this._onMouseDown, addEventOptions);
-      functor(this.upperCanvasEl, 'touchmove', this._onMouseMove, addEventOptions);
       functor(this.upperCanvasEl, 'dragover', this._onDragOver);
       functor(this.upperCanvasEl, 'dragenter', this._onDragEnter);
       functor(this.upperCanvasEl, 'dragleave', this._onDragLeave);
